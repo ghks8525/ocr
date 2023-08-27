@@ -7,15 +7,33 @@ import androidx.lifecycle.ViewModel
 import com.googlecode.tesseract.android.TessBaseAPI
 
 class MainViewModel: ViewModel() {
-    var mTess: TessBaseAPI = TessBaseAPI() //Tess API reference
-    val lang = "kor"
-    var txt: LiveData<String> = MutableLiveData()
+    val mldText:MutableLiveData<String> = MutableLiveData()
+    val mldError:MutableLiveData<String> = MutableLiveData()
+    // When using Latin script library
+    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-    init {
-        mTess.init(datapath, lang)
-    }
-    fun getText(image:Bitmap){
-        mTess.setImage(image)
-        txt.value = mTess.utF8Text
+// When using Chinese script library
+    val recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+
+// When using Devanagari script library
+    val recognizer = TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+
+// When using Japanese script library
+    val recognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+
+// When using Korean script library
+    val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+
+    fun setImage(image:Image){
+        val result = recognizer.process(image)
+        .addOnSuccessListener { visionText ->
+            // Task completed successfully
+            // ...
+            mldText.value = visionText.getText()
+        }
+        .addOnFailureListener { e ->
+            // Task failed with an exception
+            // ...
+        }
     }
 }

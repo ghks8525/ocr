@@ -13,22 +13,21 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
     lateinit var mBinding: ActivityMainBinding
+    lateinit var image: Bitmap
+    
+    val viewModel: MainViewModel by viewModel
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        image = BitmapFactory.decodeResource(resources, R.drawable.test)
 
-        System.out.println("test")
-
-        var image = BitmapFactory.decodeResource(resources, R.drawable.test)
-
-        val lang = "kor"
-
+        viewModel.mldText.observe(this){ txt ->
+            mBinding.text.text = txt 
+        }
+        viewModel.getText(image)
+        
     }
 
-    @WorkerThread
-    fun getText(image:Bitmap){
-        mTess.setImage(image)
-        mBinding.text.text = mTess.utF8Text;
-    }
 
 }
